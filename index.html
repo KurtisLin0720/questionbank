@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>題庫星球｜QuestionBank</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg:#f4f6fb; --card:#fff; --primary:#5367e8;
+  --text:#20243a; --muted:#747b91; --line:#e5e8f1;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
+}
+header {
+  background:#fff; border-bottom:1px solid var(--line);
+  padding:18px 16px; position:sticky; top:0; z-index:5;
+}
+.header-inner { max-width:900px; margin:auto; }
+.brand { font-size:23px; font-weight:800; color:var(--primary); }
+.subtitle { color:var(--muted); font-size:13px; margin-top:3px; }
+main { max-width:900px; margin:22px auto; padding:0 14px 40px; }
+.card {
+  background:var(--card); border:1px solid var(--line);
+  border-radius:16px; padding:18px; margin-bottom:16px;
+}
+h2 { font-size:19px; margin:0 0 14px; }
+h3 { font-size:16px; margin:0 0 8px; }
+p { line-height:1.6; }
+label { display:block; font-size:14px; margin:12px 0 6px; }
+input,textarea,select {
+  width:100%; padding:12px; border:1px solid #dce0eb;
+  border-radius:10px; font-size:16px; background:#fff;
+  color:var(--text);
+}
+textarea { resize:vertical; min-height:80px; }
+button {
+  border:0; border-radius:10px; padding:12px 15px;
+  background:var(--primary); color:#fff; font-size:15px;
+  font-weight:650; cursor:pointer; margin-top:10px;
+}
+button.secondary { background:#edf0ff; color:var(--primary); }
+button.danger { background:#fff0f0; color:#b42318; }
+button:disabled { opacity:.5; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; }
+.actions button { flex:1; }
+.muted { color:var(--muted); font-size:13px; }
+.notice { padding:12px; border-radius:10px; background:#eef2ff;
+  color:#3446a6; font-size:14px; line-height:1.6; margin-bottom:14px; }
+.item {
+  border:1px solid var(--line); border-radius:12px;
+  padding:14px; margin-top:10px; background:#fff;
+}
+.item p { margin:6px 0; }
+.tag {
+  display:inline-block; padding:4px 8px; border-radius:20px;
+  background:#edf0ff; color:#4557c9; font-size:12px;
+}
+.hidden { display:none !important; }
+footer { text-align:center; color:var(--muted); font-size:12px; padding:10px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">🌟 題庫星球</div>
+    <div class="subtitle">建立題庫・分享知識・練習進步</div>
+  </div>
+</header>
+
+<main>
+  <div class="notice" id="status">
+    請先設定 Supabase 連線資訊，再開始使用。
+  </div>
+
+  <section class="card" id="authCard">
+    <h2>👋 歡迎來到題庫星球</h2>
+    <p class="muted">登入後即可建立自己的題庫。</p>
+    <label for="email">電子郵件</label>
+    <input id="email" type="email" autocomplete="email"
+      placeholder="you@example.com">
+    <label for="password">密碼</label>
+    <input id="password" type="password" autocomplete="current-password"
+      placeholder="至少 6 個字元">
+    <div class="actions">
+      <button onclick="signIn()">登入</button>
+      <button class="secondary" onclick="signUp()">註冊帳號</button>
+    </div>
+  </section>
+
+  <section class="card hidden" id="userCard">
+    <div id="userInfo" class="muted"></div>
+    <button class="secondary" onclick="signOut()">登出</button>
+  </section>
+
+  <section class="card hidden" id="bankSection">
+    <h2>📚 我的題庫</h2>
+    <label for="bankTitle">題庫名稱</label>
+    <input id="bankTitle" placeholder="例如：九年級自然科">
+    <label for="bankSubject">科目</label>
+    <select id="bankSubject">
+      <option>國文</option>
+      <option>英文</option>
+      <option>數學</option>
+      <option>自然</option>
+      <option>社會</option>
+      <option>其他</option>
+    </select>
+    <label for="bankDescription">題庫說明（選填）</label>
+    <textarea id="bankDescription" placeholder="介紹這份題庫"></textarea>
+    <label>
+      <input id="bankPublic" type="checkbox"
+        style="width:auto;margin-right:6px">
+      公開題庫，讓其他人瀏覽
+    </label>
+    <button onclick="createBank()">＋ 建立題庫</button>
+    <div id="bankList"></div>
+  </section>
+
+  <section class="card hidden" id="questionSection">
+    <h2>✏️ 新增選擇題</h2>
+    <p class="muted">目前選擇的題庫：<strong id="currentBankName"></strong></p>
+    <label for="questionContent">題目內容</label>
+    <textarea id="questionContent" placeholder="輸入題目文字"></textarea>
+    <label for="questionImage">題目圖片網址（選填）</label>
+    <input id="questionImage" type="url"
+      placeholder="https://...">
+    <p class="muted">這個欄位目前填圖片網址；真正的圖片上傳功能稍後加入。</p>
+
+    <label for="optionA">選項 A</label>
+    <input id="optionA" placeholder="選項 A">
+    <label for="optionB">選項 B</label>
+    <input id="optionB" placeholder="選項 B">
+    <label for="optionC">選項 C</label>
+    <input id="optionC" placeholder="選項 C">
+    <label for="optionD">選項 D</label>
+    <input id="optionD" placeholder="選項 D">
+
+    <label for="correctAnswer">正確答案</label>
+    <select id="correctAnswer">
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+    </select>
+    <label for="explanation">解題說明（選填）</label>
+    <textarea id="explanation" placeholder="寫下解題過程"></textarea>
+    <label for="difficulty">難度</label>
+    <select id="difficulty">
+      <option value="easy">簡單</option>
+      <option value="medium" selected>普通</option>
+      <option value="hard">困難</option>
+    </select>
+    <div class="actions">
+      <button onclick="createQuestion()">儲存題目</button>
+      <button class="secondary" onclick="closeQuestions()">返回題庫</button>
+    </div>
+    <div id="questionList"></div>
+  </section>
+</main>
+
+<footer>題庫星球 QuestionBank · 初版測試中</footer>
+
+<script>
+// 第 7 步會把這兩個值換成你的 Supabase 專案資訊
+const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+
+let db = null;
+let currentUser = null;
+let selectedBank = null;
+
+const $ = id => document.getElementById(id);
+
+function message(text) {
+  $("status").textContent = text;
+}
+
+function init() {
+  if (
+    SUPABASE_URL.startsWith("YOUR_") ||
+    SUPABASE_ANON_KEY.startsWith("YOUR_")
+  ) {
+    message("網站介面已載入。下一步需要填入 Supabase 專案網址與公開金鑰。");
+    return;
+  }
+
+  db = window.supabase.createClient(
+    SUPABASE_URL, SUPABASE_ANON_KEY
+  );
+
+  db.auth.onAuthStateChange((_event, session) => {
+    currentUser = session?.user ?? null;
+    updateUI();
+  });
+
+  db.auth.getSession().then(({ data, error }) => {
+    if (error) message("讀取登入狀態失敗：" + error.message);
+    currentUser = data?.session?.user ?? null;
+    updateUI();
+  });
+}
+
+function updateUI() {
+  $("authCard").classList.toggle("hidden", !!currentUser);
+  $("userCard").classList.toggle("hidden", !currentUser);
+  $("bankSection").classList.toggle("hidden", !currentUser);
+
+  if (currentUser) {
+    $("userInfo").textContent = "已登入：" + currentUser.email;
+    message("登入成功！可以建立題庫了。");
+    loadBanks();
+  } else {
+    $("userInfo").textContent = "";
+    $("questionSection").classList.add("hidden");
+  }
+}
+
+async function signUp() {
+  if (!db) return message("請先完成 Supabase 連線設定。");
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  if (!email || password.length < 6)
+    return message("請輸入有效的電子郵件與至少 6 個字元的密碼。");
+
+  const { error } = await db.auth.signUp({ email, password });
+  if (error) return message("註冊失敗：" + error.message);
+  message("註冊要求已送出！若系統要求電子郵件驗證，請先到信箱確認。");
+}
+
+async function signIn() {
+  if (!db) return message("請先完成 Supabase 連線設定。");
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if (error) return message("登入失敗：" + error.message);
+  message("登入成功！");
+}
+
+async function signOut() {
+  if (!db) return;
+  const { error } = await db.auth.signOut();
+  if (error) return message("登出失敗：" + error.message);
+  selectedBank = null;
+  message("已登出。");
+}
+
+async function createBank() {
+  const title = $("bankTitle").value.trim();
+  if (!title) return message("請先輸入題庫名稱。");
+
+  const { error } = await db.from("question_banks").insert({
+    user_id: currentUser.id,
+    title,
+    description: $("bankDescription").value.trim(),
+    subject: $("bankSubject").value,
+    is_public: $("bankPublic").checked
+  });
+
+  if (error) return message("建立題庫失敗：" + error.message);
+  $("bankTitle").value = "";
+  $("bankDescription").value = "";
+  $("bankPublic").checked = false;
+  message("題庫建立成功！");
+  await loadBanks();
+}
+
+async function loadBanks() {
+  if (!db || !currentUser) return;
+  const { data, error } = await db
+    .from("question_banks")
+    .select("id,title,description,subject,is_public,created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    $("bankList").textContent = "讀取題庫失敗：" + error.message;
+    return;
+  }
+
+  const list = $("bankList");
+  list.replaceChildren();
+
+  if (!data.length) {
+    list.textContent = "還沒有題庫，建立你的第一份吧！";
+    return;
+  }
+
+  data.forEach(bank => {
+    const item = document.createElement("div");
+    item.className = "item";
+
+    const title = document.createElement("h3");
+    title.textContent = bank.title;
+    item.append(title);
+
+    const desc = document.createElement("p");
+    desc.className = "muted";
+    desc.textContent =
+      (bank.subject || "其他") + " · " +
+      (bank.is_public ? "公開題庫" : "私人題庫");
+    item.append(desc);
+
+    if (bank.description) {
+      const detail = document.createElement("p");
+      detail.textContent = bank.description;
+      item.append(detail);
+    }
+
+    const open = document.createElement("button");
+    open.textContent = "管理題目";
+    open.onclick = () => openQuestions(bank);
+    item.append(open);
+    list.append(item);
+  });
+}
+
+async function openQuestions(bank) {
+  selectedBank = bank;
+  $("currentBankName").textContent = bank.title;
+  $("questionSection").classList.remove("hidden");
+  await loadQuestions();
+  $("questionSection").scrollIntoView({ behavior: "smooth" });
+}
+
+function closeQuestions() {
+  $("questionSection").classList.add("hidden");
+  selectedBank = null;
+}
+
+async function createQuestion() {
+  if (!selectedBank) return message("請先選擇題庫。");
+
+  const content = $("questionContent").value.trim();
+  const values = {
+    A: $("optionA").value.trim(),
+    B: $("optionB").value.trim(),
+    C: $("optionC").value.trim(),
+    D: $("optionD").value.trim()
+  };
+
+  if (!content || Object.values(values).some(v => !v))
+    return message("請填寫題目內容與全部四個選項。");
+
+  const imageUrl = $("questionImage").value.trim();
+  if (imageUrl) {
+    try {
+      const parsed = new URL(imageUrl);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:")
+        throw new Error("網址格式錯誤");
+    } catch {
+      return message("圖片網址格式不正確。");
+    }
+  }
+
+  const { error } = await db.from("questions").insert({
+    bank_id: selectedBank.id,
+    content,
+    image_url: imageUrl || null,
+    options: values,
+    correct_answer: $("correctAnswer").value,
+    explanation: $("explanation").value.trim(),
+    difficulty: $("difficulty").value
+  });
+
+  if (error) return message("儲存題目失敗：" + error.message);
+
+  $("questionContent").value = "";
+  $("questionImage").value = "";
+  ["A","B","C","D"].forEach(k => $("option" + k).value = "");
+  $("explanation").value = "";
+  message("題目儲存成功！");
+  await loadQuestions();
+}
+
+async function loadQuestions() {
+  if (!selectedBank) return;
+
+  const { data, error } = await db
+    .from("questions")
+    .select("id,content,image_url,options,correct_answer,explanation,difficulty,created_at")
+    .eq("bank_id", selectedBank.id)
+    .order("created_at", { ascending: false });
+
+  const list = $("questionList");
+  list.replaceChildren();
+
+  if (error) {
+    list.textContent = "讀取題目失敗：" + error.message;
+    return;
+  }
+
+  const heading = document.createElement("h3");
+  heading.textContent = "本題庫的題目（" + data.length + " 題）";
+  heading.style.marginTop = "24px";
+  list.append(heading);
+
+  if (!data.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "這份題庫還沒有題目。";
+    list.append(empty);
+    return;
+  }
+
+  data.forEach((q, index) => {
+    const item = document.createElement("div");
+    item.className = "item";
+
+    const title = document.createElement("h3");
+    title.textContent = (index + 1) + ". " + q.content;
+    item.append(title);
+
+    if (q.image_url) {
+      const img = document.createElement("img");
+      img.src = q.image_url;
+      img.alt = "題目圖片";
+      img.loading = "lazy";
+      img.style.cssText =
+        "max-width:100%;max-height:300px;object-fit:contain;border-radius:8px";
+      img.onerror = () => { img.alt = "圖片載入失敗"; };
+      item.append(img);
+    }
+
+    const opts = document.createElement("p");
+    opts.textContent = Object.entries(q.options || {})
+      .map(([key, value]) => key + ". " + value)
+      .join("　");
+    item.append(opts);
+
+    const answer = document.createElement("p");
+    answer.className = "muted";
+    answer.textContent = "正確答案：" + q.correct_answer +
+      (q.explanation ? " · 解說：" + q.explanation : "");
+    item.append(answer);
+
+    list.append(item);
+  });
+}
+
+init();
+</script>
+</body>
+</html>
