@@ -1,69 +1,143 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#5367e8">
 <title>題庫星球｜QuestionBank</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --bg:#f4f6fb; --card:#fff; --primary:#5367e8;
-  --text:#20243a; --muted:#747b91; --line:#e5e8f1;
+  --bg:#f4f6fb;
+  --card:#fff;
+  --primary:#5367e8;
+  --text:#20243a;
+  --muted:#747b91;
+  --line:#e5e8f1;
+  --success:#16794b;
+  --danger:#b42318;
 }
 * { box-sizing:border-box; }
 body {
-  margin:0; background:var(--bg); color:var(--text);
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
   font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
 }
 header {
-  background:#fff; border-bottom:1px solid var(--line);
-  padding:18px 16px; position:sticky; top:0; z-index:5;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  padding:18px 16px;
+  position:sticky;
+  top:0;
+  z-index:5;
 }
 .header-inner { max-width:900px; margin:auto; }
 .brand { font-size:23px; font-weight:800; color:var(--primary); }
 .subtitle { color:var(--muted); font-size:13px; margin-top:3px; }
 main { max-width:900px; margin:22px auto; padding:0 14px 40px; }
 .card {
-  background:var(--card); border:1px solid var(--line);
-  border-radius:16px; padding:18px; margin-bottom:16px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
 }
 h2 { font-size:19px; margin:0 0 14px; }
 h3 { font-size:16px; margin:0 0 8px; }
 p { line-height:1.6; }
 label { display:block; font-size:14px; margin:12px 0 6px; }
 input,textarea,select {
-  width:100%; padding:12px; border:1px solid #dce0eb;
-  border-radius:10px; font-size:16px; background:#fff;
+  width:100%;
+  padding:12px;
+  border:1px solid #dce0eb;
+  border-radius:10px;
+  font-size:16px;
+  background:#fff;
   color:var(--text);
 }
+input[type="file"] { padding:10px; }
+input[type="checkbox"] { width:auto; }
 textarea { resize:vertical; min-height:80px; }
 button {
-  border:0; border-radius:10px; padding:12px 15px;
-  background:var(--primary); color:#fff; font-size:15px;
-  font-weight:650; cursor:pointer; margin-top:10px;
+  border:0;
+  border-radius:10px;
+  padding:12px 15px;
+  background:var(--primary);
+  color:#fff;
+  font-size:15px;
+  font-weight:650;
+  cursor:pointer;
+  margin-top:10px;
 }
 button.secondary { background:#edf0ff; color:var(--primary); }
-button.danger { background:#fff0f0; color:#b42318; }
-button:disabled { opacity:.5; }
+button.danger { background:#fff0f0; color:var(--danger); }
+button:disabled { opacity:.55; cursor:not-allowed; }
 .actions { display:flex; gap:8px; flex-wrap:wrap; }
-.actions button { flex:1; }
+.actions button { flex:1; min-width:120px; }
 .muted { color:var(--muted); font-size:13px; }
-.notice { padding:12px; border-radius:10px; background:#eef2ff;
-  color:#3446a6; font-size:14px; line-height:1.6; margin-bottom:14px; }
+.notice {
+  padding:12px;
+  border-radius:10px;
+  background:#eef2ff;
+  color:#3446a6;
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:14px;
+  overflow-wrap:anywhere;
+}
 .item {
-  border:1px solid var(--line); border-radius:12px;
-  padding:14px; margin-top:10px; background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  margin-top:10px;
+  background:#fff;
+  overflow-wrap:anywhere;
 }
 .item p { margin:6px 0; }
 .tag {
-  display:inline-block; padding:4px 8px; border-radius:20px;
-  background:#edf0ff; color:#4557c9; font-size:12px;
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:20px;
+  background:#edf0ff;
+  color:#4557c9;
+  font-size:12px;
 }
 .hidden { display:none !important; }
-footer { text-align:center; color:var(--muted); font-size:12px; padding:10px; }
+.preview-box {
+  margin-top:10px;
+  padding:10px;
+  border:1px dashed #cbd2eb;
+  border-radius:12px;
+}
+.preview-box img {
+  display:block;
+  max-width:100%;
+  max-height:280px;
+  object-fit:contain;
+  border-radius:8px;
+  margin:auto;
+}
+.question-image {
+  display:block;
+  max-width:100%;
+  max-height:360px;
+  object-fit:contain;
+  border-radius:8px;
+  margin:12px 0;
+  background:#f8f9fc;
+}
+footer {
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:10px;
+}
 </style>
 </head>
 <body>
+
 <header>
   <div class="header-inner">
     <div class="brand">🌟 題庫星球</div>
@@ -72,22 +146,25 @@ footer { text-align:center; color:var(--muted); font-size:12px; padding:10px; }
 </header>
 
 <main>
-  <div class="notice" id="status">
-    連線設定已載入，請登入或註冊。
+  <div class="notice" id="status" role="status" aria-live="polite">
+    正在初始化……
   </div>
 
   <section class="card" id="authCard">
     <h2>👋 歡迎來到題庫星球</h2>
     <p class="muted">登入後即可建立自己的題庫。</p>
+
     <label for="email">電子郵件</label>
     <input id="email" type="email" autocomplete="email"
       placeholder="you@example.com">
+
     <label for="password">密碼</label>
-    <input id="password" type="password" autocomplete="current-password"
-      placeholder="至少 6 個字元">
+    <input id="password" type="password"
+      autocomplete="current-password" placeholder="至少 6 個字元">
+
     <div class="actions">
-      <button onclick="signIn()">登入</button>
-      <button class="secondary" onclick="signUp()">註冊帳號</button>
+      <button id="signInBtn" onclick="signIn()">登入</button>
+      <button class="secondary" id="signUpBtn" onclick="signUp()">註冊帳號</button>
     </div>
   </section>
 
@@ -98,8 +175,10 @@ footer { text-align:center; color:var(--muted); font-size:12px; padding:10px; }
 
   <section class="card hidden" id="bankSection">
     <h2>📚 我的題庫</h2>
+
     <label for="bankTitle">題庫名稱</label>
     <input id="bankTitle" placeholder="例如：九年級自然科">
+
     <label for="bankSubject">科目</label>
     <select id="bankSubject">
       <option>國文</option>
@@ -109,33 +188,50 @@ footer { text-align:center; color:var(--muted); font-size:12px; padding:10px; }
       <option>社會</option>
       <option>其他</option>
     </select>
+
     <label for="bankDescription">題庫說明（選填）</label>
     <textarea id="bankDescription" placeholder="介紹這份題庫"></textarea>
+
     <label>
-      <input id="bankPublic" type="checkbox"
-        style="width:auto;margin-right:6px">
+      <input id="bankPublic" type="checkbox">
       公開題庫，讓其他人瀏覽
     </label>
-    <button onclick="createBank()">＋ 建立題庫</button>
+
+    <button id="createBankBtn" onclick="createBank()">＋ 建立題庫</button>
     <div id="bankList"></div>
   </section>
 
   <section class="card hidden" id="questionSection">
     <h2>✏️ 新增選擇題</h2>
-    <p class="muted">目前選擇的題庫：<strong id="currentBankName"></strong></p>
+    <p class="muted">
+      目前選擇的題庫：<strong id="currentBankName"></strong>
+    </p>
+
     <label for="questionContent">題目內容</label>
     <textarea id="questionContent" placeholder="輸入題目文字"></textarea>
+
     <label for="questionImage">題目圖片網址（選填）</label>
-    <input id="questionImage" type="url"
-      placeholder="https://...">
-    <p class="muted">這個欄位目前填圖片網址；真正的圖片上傳功能稍後加入。</p>
+    <input id="questionImage" type="url" placeholder="https://...">
+    <p class="muted">也可以直接輸入已經存在的圖片網址。</p>
+
+    <label for="questionImageFile">📷 或從手機選擇圖片</label>
+    <input id="questionImageFile" type="file" accept="image/*">
+    <p class="muted">
+      支援手機相簿選圖，單張最大 5 MB。
+      選擇檔案後會自動預覽；若同時填入網址和選擇檔案，會優先使用新選的圖片。
+    </p>
+
+    <div id="questionImagePreview"></div>
 
     <label for="optionA">選項 A</label>
     <input id="optionA" placeholder="選項 A">
+
     <label for="optionB">選項 B</label>
     <input id="optionB" placeholder="選項 B">
+
     <label for="optionC">選項 C</label>
     <input id="optionC" placeholder="選項 C">
+
     <label for="optionD">選項 D</label>
     <input id="optionD" placeholder="選項 D">
 
@@ -146,18 +242,22 @@ footer { text-align:center; color:var(--muted); font-size:12px; padding:10px; }
       <option value="C">C</option>
       <option value="D">D</option>
     </select>
+
     <label for="explanation">解題說明（選填）</label>
     <textarea id="explanation" placeholder="寫下解題過程"></textarea>
+
     <label for="difficulty">難度</label>
     <select id="difficulty">
       <option value="easy">簡單</option>
       <option value="medium" selected>普通</option>
       <option value="hard">困難</option>
     </select>
+
     <div class="actions">
-      <button onclick="createQuestion()">儲存題目</button>
+      <button id="saveQuestionBtn" onclick="createQuestion()">儲存題目</button>
       <button class="secondary" onclick="closeQuestions()">返回題庫</button>
     </div>
+
     <div id="questionList"></div>
   </section>
 </main>
@@ -165,13 +265,20 @@ footer { text-align:center; color:var(--muted); font-size:12px; padding:10px; }
 <footer>題庫星球 QuestionBank · 初版測試中</footer>
 
 <script>
-// 第 7 步會把這兩個值換成你的 Supabase 專案資訊
+"use strict";
+
+// 這是前端可使用的 Supabase 公開金鑰，不可放入 service_role 金鑰。
 const SUPABASE_URL = "https://kfikegatnvzdumhcujis.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_fclRoTH0sX7WiWcrpjB30Q_fzFlgu_i";
+
+const BUCKET_NAME = "question-images";
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 let db = null;
 let currentUser = null;
 let selectedBank = null;
+let previewObjectUrl = null;
+let loadingBanks = false;
 
 const $ = id => document.getElementById(id);
 
@@ -179,28 +286,61 @@ function message(text) {
   $("status").textContent = text;
 }
 
+function setBusy(buttonId, busy, busyText) {
+  const button = $(buttonId);
+  if (!button) return;
+
+  if (busy) {
+    button.dataset.originalText = button.textContent;
+    button.textContent = busyText;
+    button.disabled = true;
+  } else {
+    button.textContent = button.dataset.originalText || button.textContent;
+    button.disabled = false;
+  }
+}
+
+function getErrorText(error) {
+  return error?.message || "未知錯誤，請稍後再試。";
+}
+
 function init() {
+  if (!window.supabase) {
+    message("Supabase 程式載入失敗，請檢查網路後重新整理。");
+    return;
+  }
+
   if (
-    SUPABASE_URL.startsWith("YOUR_") ||
+    !SUPABASE_URL.startsWith("https://") ||
+    SUPABASE_URL.includes("YOUR_") ||
     SUPABASE_ANON_KEY.startsWith("YOUR_")
   ) {
-    message("網站介面已載入。下一步需要填入 Supabase 專案網址與公開金鑰。");
+    message("請檢查 Supabase 網址與公開金鑰設定。");
     return;
   }
 
   db = window.supabase.createClient(
-    SUPABASE_URL, SUPABASE_ANON_KEY
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
   );
 
   db.auth.onAuthStateChange((_event, session) => {
     currentUser = session?.user ?? null;
-    updateUI();
+
+    // 避免在 Supabase 驗證回呼中直接執行一連串資料庫操作。
+    setTimeout(() => updateUI(), 0);
   });
 
   db.auth.getSession().then(({ data, error }) => {
-    if (error) message("讀取登入狀態失敗：" + error.message);
+    if (error) {
+      message("讀取登入狀態失敗：" + getErrorText(error));
+      return;
+    }
+
     currentUser = data?.session?.user ?? null;
     updateUI();
+  }).catch(error => {
+    message("初始化失敗：" + getErrorText(error));
   });
 }
 
@@ -210,117 +350,194 @@ function updateUI() {
   $("bankSection").classList.toggle("hidden", !currentUser);
 
   if (currentUser) {
-    $("userInfo").textContent = "已登入：" + currentUser.email;
-    message("登入成功！可以建立題庫了。");
+    $("userInfo").textContent = "已登入：" + (currentUser.email || "");
+    message("登入成功！可以建立題庫及新增題目了。");
     loadBanks();
   } else {
     $("userInfo").textContent = "";
     $("questionSection").classList.add("hidden");
+    selectedBank = null;
+    $("bankList").replaceChildren();
   }
 }
 
 async function signUp() {
-  if (!db) return message("請先完成 Supabase 連線設定。");
+  if (!db) return message("Supabase 尚未完成初始化。");
+
   const email = $("email").value.trim();
   const password = $("password").value;
-  if (!email || password.length < 6)
-    return message("請輸入有效的電子郵件與至少 6 個字元的密碼。");
 
-  const { error } = await db.auth.signUp({ email, password });
-  if (error) return message("註冊失敗：" + error.message);
-  message("註冊要求已送出！若系統要求電子郵件驗證，請先到信箱確認。");
+  if (!email || password.length < 6) {
+    return message("請輸入有效的電子郵件與至少 6 個字元的密碼。");
+  }
+
+  setBusy("signUpBtn", true, "註冊中……");
+
+  try {
+    const { error } = await db.auth.signUp({ email, password });
+
+    if (error) {
+      message("註冊失敗：" + getErrorText(error));
+      return;
+    }
+
+    message("註冊要求已送出！若系統要求電子郵件驗證，請先到信箱確認。");
+  } catch (error) {
+    message("註冊失敗：" + getErrorText(error));
+  } finally {
+    setBusy("signUpBtn", false);
+  }
 }
 
 async function signIn() {
-  if (!db) return message("請先完成 Supabase 連線設定。");
+  if (!db) return message("Supabase 尚未完成初始化。");
+
   const email = $("email").value.trim();
   const password = $("password").value;
-  const { error } = await db.auth.signInWithPassword({ email, password });
-  if (error) return message("登入失敗：" + error.message);
-  message("登入成功！");
+
+  if (!email || !password) {
+    return message("請輸入電子郵件與密碼。");
+  }
+
+  setBusy("signInBtn", true, "登入中……");
+
+  try {
+    const { error } = await db.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      message("登入失敗：" + getErrorText(error));
+      return;
+    }
+
+    message("登入成功！");
+  } catch (error) {
+    message("登入失敗：" + getErrorText(error));
+  } finally {
+    setBusy("signInBtn", false);
+  }
 }
 
 async function signOut() {
   if (!db) return;
+
   const { error } = await db.auth.signOut();
-  if (error) return message("登出失敗：" + error.message);
+
+  if (error) {
+    message("登出失敗：" + getErrorText(error));
+    return;
+  }
+
+  currentUser = null;
   selectedBank = null;
+  $("questionSection").classList.add("hidden");
   message("已登出。");
 }
 
 async function createBank() {
+  if (!currentUser) return message("請先登入。");
+
   const title = $("bankTitle").value.trim();
+
   if (!title) return message("請先輸入題庫名稱。");
 
-  const { error } = await db.from("question_banks").insert({
-    user_id: currentUser.id,
-    title,
-    description: $("bankDescription").value.trim(),
-    subject: $("bankSubject").value,
-    is_public: $("bankPublic").checked
-  });
+  setBusy("createBankBtn", true, "建立中……");
 
-  if (error) return message("建立題庫失敗：" + error.message);
-  $("bankTitle").value = "";
-  $("bankDescription").value = "";
-  $("bankPublic").checked = false;
-  message("題庫建立成功！");
-  await loadBanks();
+  try {
+    const { error } = await db.from("question_banks").insert({
+      user_id: currentUser.id,
+      title,
+      description: $("bankDescription").value.trim(),
+      subject: $("bankSubject").value,
+      is_public: $("bankPublic").checked
+    });
+
+    if (error) {
+      message("建立題庫失敗：" + getErrorText(error));
+      return;
+    }
+
+    $("bankTitle").value = "";
+    $("bankDescription").value = "";
+    $("bankPublic").checked = false;
+
+    message("題庫建立成功！");
+    await loadBanks();
+  } catch (error) {
+    message("建立題庫失敗：" + getErrorText(error));
+  } finally {
+    setBusy("createBankBtn", false);
+  }
 }
 
 async function loadBanks() {
-  if (!db || !currentUser) return;
-  const { data, error } = await db
-    .from("question_banks")
-    .select("id,title,description,subject,is_public,created_at")
-    .order("created_at", { ascending: false });
+  if (!db || !currentUser || loadingBanks) return;
 
-  if (error) {
-    $("bankList").textContent = "讀取題庫失敗：" + error.message;
-    return;
-  }
+  loadingBanks = true;
 
-  const list = $("bankList");
-  list.replaceChildren();
+  try {
+    const { data, error } = await db
+      .from("question_banks")
+      .select("id,title,description,subject,is_public,created_at")
+      .order("created_at", { ascending: false });
 
-  if (!data.length) {
-    list.textContent = "還沒有題庫，建立你的第一份吧！";
-    return;
-  }
-
-  data.forEach(bank => {
-    const item = document.createElement("div");
-    item.className = "item";
-
-    const title = document.createElement("h3");
-    title.textContent = bank.title;
-    item.append(title);
-
-    const desc = document.createElement("p");
-    desc.className = "muted";
-    desc.textContent =
-      (bank.subject || "其他") + " · " +
-      (bank.is_public ? "公開題庫" : "私人題庫");
-    item.append(desc);
-
-    if (bank.description) {
-      const detail = document.createElement("p");
-      detail.textContent = bank.description;
-      item.append(detail);
+    if (error) {
+      $("bankList").textContent =
+        "讀取題庫失敗：" + getErrorText(error);
+      return;
     }
 
-    const open = document.createElement("button");
-    open.textContent = "管理題目";
-    open.onclick = () => openQuestions(bank);
-    item.append(open);
-    list.append(item);
-  });
+    const list = $("bankList");
+    list.replaceChildren();
+
+    if (!data || data.length === 0) {
+      list.textContent = "還沒有題庫，建立你的第一份吧！";
+      return;
+    }
+
+    data.forEach(bank => {
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const title = document.createElement("h3");
+      title.textContent = bank.title;
+      item.append(title);
+
+      const desc = document.createElement("p");
+      desc.className = "muted";
+      desc.textContent =
+        (bank.subject || "其他") + " · " +
+        (bank.is_public ? "公開題庫" : "私人題庫");
+      item.append(desc);
+
+      if (bank.description) {
+        const detail = document.createElement("p");
+        detail.textContent = bank.description;
+        item.append(detail);
+      }
+
+      const open = document.createElement("button");
+      open.textContent = "管理題目";
+      open.onclick = () => openQuestions(bank);
+      item.append(open);
+
+      list.append(item);
+    });
+  } catch (error) {
+    $("bankList").textContent =
+      "讀取題庫失敗：" + getErrorText(error);
+  } finally {
+    loadingBanks = false;
+  }
 }
 
 async function openQuestions(bank) {
   selectedBank = bank;
   $("currentBankName").textContent = bank.title;
   $("questionSection").classList.remove("hidden");
+
   await loadQuestions();
   $("questionSection").scrollIntoView({ behavior: "smooth" });
 }
@@ -328,12 +545,131 @@ async function openQuestions(bank) {
 function closeQuestions() {
   $("questionSection").classList.add("hidden");
   selectedBank = null;
+  clearImageSelection();
+}
+
+function clearImageSelection() {
+  $("questionImageFile").value = "";
+  $("questionImagePreview").replaceChildren();
+
+  if (previewObjectUrl) {
+    URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl = null;
+  }
+}
+
+function previewQuestionImage() {
+  clearImageSelection();
+
+  const file = $("questionImageFile").files[0];
+  const preview = $("questionImagePreview");
+
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    message("請選擇圖片檔案。");
+    $("questionImageFile").value = "";
+    return;
+  }
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    message("圖片不能超過 5 MB，請選擇較小的圖片。");
+    $("questionImageFile").value = "";
+    return;
+  }
+
+  previewObjectUrl = URL.createObjectURL(file);
+
+  const box = document.createElement("div");
+  box.className = "preview-box";
+
+  const label = document.createElement("p");
+  label.className = "muted";
+  label.textContent =
+    "圖片預覽：" + file.name +
+    "（" + (file.size / 1024 / 1024).toFixed(2) + " MB）";
+
+  const img = document.createElement("img");
+  img.src = previewObjectUrl;
+  img.alt = "準備上傳的題目圖片預覽";
+
+  box.append(label, img);
+  preview.append(box);
+
+  message("圖片已選取，儲存題目時會一併上傳。");
+}
+
+async function uploadQuestionImage(file) {
+  if (!currentUser) {
+    throw new Error("請先登入再上傳圖片。");
+  }
+
+  if (!file.type.startsWith("image/")) {
+    throw new Error("請選擇圖片檔案。");
+  }
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    throw new Error("圖片不能超過 5 MB。");
+  }
+
+  const allowedExtensions = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+    "image/avif": "avif"
+  };
+
+  const extension = allowedExtensions[file.type];
+
+  if (!extension) {
+    throw new Error("目前支援 JPG、PNG、WEBP、GIF 及 AVIF 圖片。");
+  }
+
+  // 第一層資料夾為登入者 ID，符合已建立的 Storage 上傳政策。
+  const filePath =
+    currentUser.id + "/" +
+    Date.now() + "-" +
+    Math.random().toString(36).slice(2) +
+    "." + extension;
+
+  message("正在上傳圖片，請稍候……");
+
+  const { error } = await db.storage
+    .from(BUCKET_NAME)
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type
+    });
+
+  if (error) {
+    throw new Error("圖片上傳失敗：" + getErrorText(error));
+  }
+
+  // 此功能使用公開 Bucket，取得可顯示的圖片網址。
+  const { data } = db.storage
+    .from(BUCKET_NAME)
+    .getPublicUrl(filePath);
+
+  if (!data?.publicUrl) {
+    throw new Error("圖片已上傳，但無法取得圖片網址。");
+  }
+
+  return data.publicUrl;
 }
 
 async function createQuestion() {
-  if (!selectedBank) return message("請先選擇題庫。");
+  if (!db || !currentUser) {
+    return message("請先登入。");
+  }
+
+  if (!selectedBank) {
+    return message("請先選擇題庫。");
+  }
 
   const content = $("questionContent").value.trim();
+
   const values = {
     A: $("optionA").value.trim(),
     B: $("optionB").value.trim(),
@@ -341,108 +677,119 @@ async function createQuestion() {
     D: $("optionD").value.trim()
   };
 
-  if (!content || Object.values(values).some(v => !v))
+  if (!content) {
+    return message("請先輸入題目內容。");
+  }
+
+  if (Object.values(values).some(value => !value)) {
     return message("請填寫題目內容與全部四個選項。");
+  }
 
-  
-let imageUrl = $("questionImage").value.trim();
-  $("questionImageFile").value = "";
-$("questionImagePreview").replaceChildren();
-const imageFile = $("questionImageFile").files[0];
+  // 先讀取選擇的檔案，不能在讀取之前清空欄位。
+  const imageFile = $("questionImageFile").files[0];
+  let imageUrl = $("questionImage").value.trim();
 
-if (imageFile) {
-  if (!imageFile.type.startsWith("image/"))
-    return message("請選擇圖片檔案。");
+  if (imageUrl) {
+    try {
+      const parsed = new URL(imageUrl);
 
-  if (imageFile.size > 5 * 1024 * 1024)
-    return message("圖片不能超過 5 MB。");
+      if (parsed.protocol !== "https:" &&
+          parsed.protocol !== "http:") {
+        throw new Error("網址格式錯誤");
+      }
+    } catch {
+      return message("圖片網址格式不正確，請確認後再試。");
+    }
+  }
 
-  if (!currentUser)
-    return message("請先登入再上傳圖片。");
+  if (imageFile) {
+    if (!imageFile.type.startsWith("image/")) {
+      return message("請選擇圖片檔案。");
+    }
 
-  const ext = (
-    imageFile.name.split(".").pop() || "jpg"
-  ).replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "jpg";
+    if (imageFile.size > MAX_IMAGE_SIZE) {
+      return message("圖片不能超過 5 MB。");
+    }
+  }
 
-  const filePath =
-    `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  setBusy("saveQuestionBtn", true, "儲存中……");
 
-  message("正在上傳圖片，請稍候……");
+  try {
+    // 若選了新圖片，就先上傳並使用新的圖片網址。
+    if (imageFile) {
+      imageUrl = await uploadQuestionImage(imageFile);
+    }
 
-  const { error: uploadError } = await db.storage
-    .from("question-images")
-    .upload(filePath, imageFile, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: imageFile.type
+    message("正在儲存題目……");
+
+    const { error } = await db.from("questions").insert({
+      bank_id: selectedBank.id,
+      content,
+      image_url: imageUrl || null,
+      options: values,
+      correct_answer: $("correctAnswer").value,
+      explanation: $("explanation").value.trim(),
+      difficulty: $("difficulty").value
     });
 
-  if (uploadError)
-    return message("圖片上傳失敗：" + uploadError.message);
-
-  const { data: publicData } = db.storage
-    .from("question-images")
-    .getPublicUrl(filePath);
-
-  imageUrl = publicData.publicUrl;
-}
-
-if (imageUrl) {
-  try {
-    const parsed = new URL(imageUrl);
-    if (parsed.protocol !== "https:" &&
-        parsed.protocol !== "http:") {
-      throw new Error("網址格式錯誤");
+    if (error) {
+      message(
+        "儲存題目失敗：" + getErrorText(error) +
+        (imageFile
+          ? "；圖片可能已上傳，但題目未儲存。"
+          : "")
+      );
+      return;
     }
-  } catch {
-    return message("圖片網址格式不正確。");
+
+    $("questionContent").value = "";
+    $("questionImage").value = "";
+    $("optionA").value = "";
+    $("optionB").value = "";
+    $("optionC").value = "";
+    $("optionD").value = "";
+    $("explanation").value = "";
+    $("correctAnswer").value = "A";
+    $("difficulty").value = "medium";
+
+    clearImageSelection();
+
+    message("題目與圖片已成功儲存！");
+    await loadQuestions();
+  } catch (error) {
+    message(getErrorText(error));
+  } finally {
+    setBusy("saveQuestionBtn", false);
   }
 }
 
-
-  const { error } = await db.from("questions").insert({
-    bank_id: selectedBank.id,
-    content,
-    image_url: imageUrl || null,
-    options: values,
-    correct_answer: $("correctAnswer").value,
-    explanation: $("explanation").value.trim(),
-    difficulty: $("difficulty").value
-  });
-
-  if (error) return message("儲存題目失敗：" + error.message);
-
-  $("questionContent").value = "";
-  $("questionImage").value = "";
-  ["A","B","C","D"].forEach(k => $("option" + k).value = "");
-  $("explanation").value = "";
-  message("題目儲存成功！");
-  await loadQuestions();
-}
-
 async function loadQuestions() {
-  if (!selectedBank) return;
-
-  const { data, error } = await db
-    .from("questions")
-    .select("id,content,image_url,options,correct_answer,explanation,difficulty,created_at")
-    .eq("bank_id", selectedBank.id)
-    .order("created_at", { ascending: false });
+  if (!db || !selectedBank) return;
 
   const list = $("questionList");
   list.replaceChildren();
 
+  const { data, error } = await db
+    .from("questions")
+    .select(
+      "id,content,image_url,options,correct_answer,explanation,difficulty,created_at"
+    )
+    .eq("bank_id", selectedBank.id)
+    .order("created_at", { ascending: false });
+
   if (error) {
-    list.textContent = "讀取題目失敗：" + error.message;
+    list.textContent = "讀取題目失敗：" + getErrorText(error);
     return;
   }
 
+  const questions = data || [];
+
   const heading = document.createElement("h3");
-  heading.textContent = "本題庫的題目（" + data.length + " 題）";
+  heading.textContent = "本題庫的題目（" + questions.length + " 題）";
   heading.style.marginTop = "24px";
   list.append(heading);
 
-  if (!data.length) {
+  if (questions.length === 0) {
     const empty = document.createElement("p");
     empty.className = "muted";
     empty.textContent = "這份題庫還沒有題目。";
@@ -450,7 +797,7 @@ async function loadQuestions() {
     return;
   }
 
-  data.forEach((q, index) => {
+  questions.forEach((q, index) => {
     const item = document.createElement("div");
     item.className = "item";
 
@@ -463,9 +810,12 @@ async function loadQuestions() {
       img.src = q.image_url;
       img.alt = "題目圖片";
       img.loading = "lazy";
-      img.style.cssText =
-        "max-width:100%;max-height:300px;object-fit:contain;border-radius:8px";
-      img.onerror = () => { img.alt = "圖片載入失敗"; };
+      img.className = "question-image";
+
+      img.onerror = () => {
+        img.alt = "圖片載入失敗，請檢查圖片網址與 Storage 設定。";
+      };
+
       item.append(img);
     }
 
@@ -477,13 +827,22 @@ async function loadQuestions() {
 
     const answer = document.createElement("p");
     answer.className = "muted";
-    answer.textContent = "正確答案：" + q.correct_answer +
+    answer.textContent =
+      "正確答案：" + q.correct_answer +
       (q.explanation ? " · 解說：" + q.explanation : "");
     item.append(answer);
 
     list.append(item);
   });
 }
+
+$("questionImageFile").addEventListener("change", previewQuestionImage);
+
+window.addEventListener("beforeunload", () => {
+  if (previewObjectUrl) {
+    URL.revokeObjectURL(previewObjectUrl);
+  }
+});
 
 init();
 </script>
