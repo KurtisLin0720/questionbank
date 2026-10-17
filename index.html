@@ -478,11 +478,22 @@ function renderQuestions() {
   });
 }
 
-$("newQuestionButton").onclick = () => showQuestionForm();
-$("cancelQuestionButton").onclick = () => setHidden("questionForm",true);
+function showQuestionForm(q=null) {
+  if (!currentBank) {
+  $("newQuestionButton").onclick = () => {
+  if (!currentBank) {
+    status("請先開啟一個題庫。", true);
+    return;
+  }
+  showQuestionForm();
+};
+  $("cancelQuestionButton").onclick = () => setHidden("questionForm",true);
 
 function showQuestionForm(q=null) {
-  if (!currentBank || !isOwner(currentBank)) return;
+  if (!currentBank) {
+    status("請先開啟一個題庫。", true);
+    return;
+  }
   editingQuestionId = q?.id || null;
   editingImagePath = q?.image_url || "";
   $("questionFormTitle").textContent = q ? "編輯題目" : "新增題目";
