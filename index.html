@@ -2,61 +2,51 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>我的線上題庫</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;color:#202124;background:#f6f8fc}
 *{box-sizing:border-box}
 body{margin:0}
-header{background:#fff;padding:16px max(16px,calc((100% - 1000px)/2));border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-main{max-width:1000px;margin:24px auto;padding:0 14px 40px}
-h1{font-size:23px;margin:0}
+header{background:#fff;padding:14px max(14px,calc((100% - 1000px)/2));border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+main{max-width:1000px;margin:22px auto;padding:0 14px 40px}
+h1{font-size:22px;margin:0}
 h2{font-size:20px;margin:0 0 12px}
-h3{margin:0 0 10px;font-size:18px}
+h3{font-size:17px;margin:0 0 10px}
 p{line-height:1.7}
-.card{background:white;border:1px solid #e1e4eb;border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 2px 8px #00000008}
-input,textarea,select{width:100%;padding:12px;border:1px solid #c8ccd4;border-radius:9px;font:inherit;margin:5px 0 12px;background:white;color:inherit}
+.card{background:#fff;border:1px solid #e1e4eb;border-radius:14px;padding:18px;margin-bottom:16px}
+input,textarea,select{width:100%;padding:11px;border:1px solid #c8ccd4;border-radius:9px;font:inherit;margin:5px 0 12px;background:#fff;color:inherit}
 textarea{min-height:85px;resize:vertical}
 label{display:block;font-weight:600;margin-top:8px}
-button{border:0;border-radius:9px;padding:11px 16px;font:inherit;font-weight:600;cursor:pointer;background:#1a73e8;color:white}
+button{border:0;border-radius:9px;padding:11px 14px;font:inherit;font-weight:600;cursor:pointer;background:#1a73e8;color:white}
 button.secondary{background:#e8f0fe;color:#174ea6}
 button.danger{background:#fce8e6;color:#b3261e}
 button.gray{background:#eee;color:#333}
 button:disabled{opacity:.5;cursor:not-allowed}
 .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.row{display:flex;gap:12px;flex-wrap:wrap}
-.row>*{flex:1;min-width:150px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:140px}
 .hidden{display:none!important}
 .muted{color:#697386;font-size:14px}
-.bank-item,.question-item{border:1px solid #e1e4eb;border-radius:12px;padding:15px;margin-top:12px}
-.bank-item{cursor:pointer}
-.bank-item:hover{border-color:#1a73e8;background:#f8faff}
+.bank-item,.question-item{border:1px solid #e1e4eb;border-radius:12px;padding:14px;margin-top:12px}
 .bank-head,.question-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.pill{display:inline-block;border-radius:20px;background:#e8f0fe;color:#174ea6;padding:4px 10px;font-size:12px;margin:3px}
-hr{border:0;border-top:1px solid #eee;margin:18px 0}
+.pill{display:inline-block;border-radius:20px;background:#e8f0fe;color:#174ea6;padding:4px 9px;font-size:12px;margin:3px}
+hr{border:0;border-top:1px solid #eee;margin:17px 0}
 .option-editor{display:flex;gap:8px;align-items:center}
 .option-editor input{margin:4px 0}
-.option-editor button{flex-shrink:0}
-.answer-choice{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid #dadce0;border-radius:10px;margin:10px 0;cursor:pointer;font-weight:400;transition:.12s}
-.answer-choice:hover{background:#f7faff;border-color:#8ab4f8}
-.answer-choice.selected{background:#e8f0fe;border:2px solid #1a73e8;padding:13px}
-.answer-choice input{width:19px;height:19px;margin:2px 0 0;flex-shrink:0;accent-color:#1a73e8}
+.answer-choice{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid #dadce0;border-radius:10px;margin:9px 0;cursor:pointer;font-weight:400}
+.answer-choice.selected{background:#e8f0fe;border:2px solid #1a73e8;padding:11px}
+.answer-choice input{width:19px;height:19px;margin:2px 0 0;flex-shrink:0}
 .answer-choice span{flex:1;white-space:pre-wrap;overflow-wrap:anywhere}
 .question-image{display:block;max-width:100%;max-height:360px;object-fit:contain;border-radius:10px;margin:12px 0}
-.feedback{border-radius:10px;padding:14px;margin-top:12px;line-height:1.8}
+.feedback{border-radius:10px;padding:13px;margin-top:12px;line-height:1.8}
 .correct{background:#e6f4ea;color:#137333}
 .incorrect{background:#fce8e6;color:#b3261e}
-.neutral{background:#f1f3f4;color:#333}
 .progress{height:7px;background:#e8eaed;border-radius:9px;overflow:hidden;margin:12px 0}
-.progress div{height:100%;background:#1a73e8;transition:width .2s}
-.small{font-size:13px}
-@media(max-width:600px){
-  main{margin-top:14px}
-  .card{padding:15px}
-  header{padding:13px}
-  h1{font-size:20px}
-}
+.progress div{height:100%;background:#1a73e8}
+#status{white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:600px){main{margin-top:12px}.card{padding:14px}header{padding:12px}h1{font-size:20px}}
 </style>
 </head>
 <body>
@@ -65,24 +55,21 @@ hr{border:0;border-top:1px solid #eee;margin:18px 0}
   <h1>📚 我的線上題庫</h1>
   <div class="actions">
     <span id="userLabel" class="muted"></span>
-    <button id="logoutButton" class="secondary hidden">登出</button>
+    <button type="button" id="logoutButton" class="secondary hidden">登出</button>
   </div>
 </header>
 
 <main>
   <div id="authSection" class="card">
     <h2>登入題庫</h2>
-    <p class="muted">登入後可以管理題庫、建立題目及進行測驗。</p>
-
+    <p class="muted">登入後可以建立題庫、管理題目及進行測驗。</p>
     <label for="email">電子郵件</label>
     <input id="email" type="email" autocomplete="email" placeholder="輸入電子郵件">
-
     <label for="password">密碼</label>
     <input id="password" type="password" autocomplete="current-password" placeholder="輸入密碼">
-
     <div class="actions">
-      <button id="loginButton">登入</button>
-      <button id="signupButton" class="secondary">註冊帳號</button>
+      <button type="button" id="loginButton">登入</button>
+      <button type="button" id="signupButton" class="secondary">註冊帳號</button>
     </div>
   </div>
 
@@ -93,33 +80,24 @@ hr{border:0;border-top:1px solid #eee;margin:18px 0}
           <h2>我的題庫</h2>
           <p class="muted">建立題庫，或開啟已有的題庫。</p>
         </div>
-        <button id="showBankFormButton">＋ 建立題庫</button>
+        <button type="button" id="showBankFormButton">＋ 建立題庫</button>
       </div>
 
       <div id="bankForm" class="hidden">
         <hr>
         <h3 id="bankFormTitle">建立題庫</h3>
-
         <label for="bankTitle">題庫名稱</label>
         <input id="bankTitle" placeholder="例如：九上地科練習">
-
         <label for="bankSubject">科目</label>
         <input id="bankSubject" placeholder="例如：自然、數學、英文">
-
         <label for="bankDescription">題庫說明</label>
         <textarea id="bankDescription" placeholder="簡單介紹這份題庫"></textarea>
-
-        <label>
-          <input id="bankPublic" type="checkbox" style="width:auto;margin-right:8px">
-          允許其他人查看（需配合 Supabase RLS 政策）
-        </label>
-
+        <label><input id="bankPublic" type="checkbox" style="width:auto"> 允許其他人查看</label>
         <div class="actions">
-          <button id="saveBankButton">儲存題庫</button>
-          <button id="cancelBankButton" class="gray">取消</button>
+          <button type="button" id="saveBankButton">儲存題庫</button>
+          <button type="button" id="cancelBankButton" class="gray">取消</button>
         </div>
       </div>
-
       <div id="bankList"></div>
     </section>
 
@@ -129,49 +107,39 @@ hr{border:0;border-top:1px solid #eee;margin:18px 0}
           <h2 id="selectedBankTitle">題目列表</h2>
           <p id="selectedBankDescription" class="muted"></p>
         </div>
-
         <div class="actions">
-          <button id="practiceButton">開始作答</button>
-          <button id="newQuestionButton">＋ 新增題目</button>
+          <button type="button" id="practiceButton">開始作答</button>
+          <button type="button" id="newQuestionButton">＋ 新增題目</button>
         </div>
       </div>
 
       <div id="questionForm" class="hidden">
         <hr>
         <h3 id="questionFormTitle">新增題目</h3>
-
         <label for="questionContent">題目內容</label>
         <textarea id="questionContent" placeholder="輸入題目"></textarea>
-
         <label for="questionImage">題目圖片（選填）</label>
         <input id="questionImage" type="file" accept="image/*">
         <div id="imagePreviewArea"></div>
-
         <label for="questionType">題型</label>
         <select id="questionType">
           <option value="single">單選題</option>
           <option value="multiple">多選題</option>
         </select>
-
         <label>選項</label>
-        <p class="muted">每個選項一列。選項可自行增加或刪除。</p>
+        <p class="muted">每個選項一列，至少填寫兩個選項。</p>
         <div id="optionEditor"></div>
-
-        <button id="addOptionButton" type="button" class="secondary">＋ 增加選項</button>
-
+        <button type="button" id="addOptionButton" class="secondary">＋ 增加選項</button>
         <label>正確答案</label>
         <p class="muted">點選正確選項。單選題只能選一個，多選題可以複選。</p>
         <div id="correctEditor"></div>
-
         <label for="questionExplanation">答案解析（選填）</label>
         <textarea id="questionExplanation" placeholder="說明這題為什麼選這個答案"></textarea>
-
         <div class="actions">
-          <button id="saveQuestionButton">儲存題目</button>
-          <button id="cancelQuestionButton" class="gray">取消</button>
+          <button type="button" id="saveQuestionButton">儲存題目</button>
+          <button type="button" id="cancelQuestionButton" class="gray">取消</button>
         </div>
       </div>
-
       <div id="questionList"></div>
     </section>
 
@@ -182,26 +150,19 @@ hr{border:0;border-top:1px solid #eee;margin:18px 0}
             <h2 id="practiceTitle">作答模式</h2>
             <p id="practiceDescription" class="muted"></p>
           </div>
-          <button id="exitPracticeButton" class="gray">離開作答</button>
+          <button type="button" id="exitPracticeButton" class="gray">離開作答</button>
         </div>
-
-        <div class="progress">
-          <div id="progressBar" style="width:0%"></div>
-        </div>
-
+        <div class="progress"><div id="progressBar" style="width:0%"></div></div>
         <p id="progressText" class="muted"></p>
         <div id="practiceQuestions"></div>
-
         <div class="actions" style="margin-top:18px">
-          <button id="submitPracticeButton">交卷並查看結果</button>
-          <button id="retryPracticeButton" class="secondary hidden">重新作答</button>
+          <button type="button" id="submitPracticeButton">交卷並查看結果</button>
+          <button type="button" id="retryPracticeButton" class="secondary hidden">重新作答</button>
         </div>
-
         <div id="practiceResult"></div>
       </div>
     </section>
   </div>
-
   <div id="status" class="muted" role="status" style="margin-top:12px"></div>
 </main>
 
@@ -212,9 +173,9 @@ const SUPABASE_URL = "https://kfikegatnvzdumhcujis.supabase.co";
 const SUPABASE_KEY = "sb_publishable_fclRoTH0sX7WiWcrpjB30Q_fzFlgu_i";
 const IMAGE_BUCKET = "question-images";
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 
+let db;
 let currentUser = null;
 let currentBank = null;
 let banks = [];
@@ -222,10 +183,10 @@ let questions = [];
 let editingBankId = null;
 let editingQuestionId = null;
 let editingImagePath = "";
+let optionValues = [];
 let practiceQuestions = [];
 let answers = {};
 let submitted = false;
-let optionValues = [];
 
 function status(message, error = false) {
   $("status").textContent = message;
@@ -234,107 +195,87 @@ function status(message, error = false) {
 
 function escapeHtml(value = "") {
   return String(value).replace(/[&<>"']/g, c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
   }[c]));
-}
-
-function isOwner(bank) {
-  return !!currentUser && !!bank && bank.user_id === currentUser.id;
-}
-
-function parseOptions(value) {
-  if (Array.isArray(value)) return value.map(v => String(v));
-
-  if (typeof value === "string") {
-    try {
-      const parsed = JSON.parse(value);
-      if (Array.isArray(parsed)) return parsed.map(String);
-    } catch {}
-
-    return value.split("\n").map(v => v.trim()).filter(Boolean);
-  }
-
-  return [];
-}
-
-function parseCorrect(value) {
-  if (Array.isArray(value)) return value.map(String);
-  if (value == null || value === "") return [];
-
-  try {
-    const parsed = JSON.parse(value);
-    if (Array.isArray(parsed)) return parsed.map(String);
-  } catch {}
-
-  return [String(value)];
-}
-
-function labelsFor(options) {
-  return options.map((_, i) => String.fromCharCode(65 + i));
-}
-
-function normalizeCorrect(question) {
-  const opts = parseOptions(question.options);
-  const raw = parseCorrect(question.correct_answer);
-
-  return raw.map(value => {
-    const index = labelsFor(opts).indexOf(value.toUpperCase());
-    if (index >= 0) return opts[index];
-    return value;
-  });
-}
-
-function sameAnswers(a, b) {
-  if (a.length !== b.length) return false;
-
-  const left = [...a].map(String).sort();
-  const right = [...b].map(String).sort();
-
-  return left.every((v, i) => v === right[i]);
-}
-
-function isMultiple(question) {
-  return question.question_type === "multiple" ||
-    question.type === "multiple" ||
-    question.multiple === true ||
-    parseCorrect(question.correct_answer).length > 1;
 }
 
 function setHidden(id, hidden) {
   $(id).classList.toggle("hidden", hidden);
 }
 
+function isOwner(bank) {
+  return !!currentUser && !!bank && String(bank.user_id) === String(currentUser.id);
+}
+
+function parseOptions(value) {
+  if (Array.isArray(value)) return value.map(String);
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    } catch (e) {}
+    return value.split("\n").map(v => v.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+function parseCorrect(value) {
+  if (Array.isArray(value)) return value.map(String);
+  if (value == null || value === "") return [];
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) return parsed.map(String);
+  } catch (e) {}
+  return [String(value)];
+}
+
+function normalizeCorrect(q) {
+  const opts = parseOptions(q.options);
+  const raw = parseCorrect(q.correct_answer);
+  return raw.map(v => {
+    const index = opts.findIndex((_, i) =>
+      String.fromCharCode(65 + i) === v.toUpperCase()
+    );
+    return index >= 0 ? opts[index] : v;
+  });
+}
+
+function isMultiple(q) {
+  return q.question_type === "multiple" ||
+    q.type === "multiple" ||
+    q.multiple === true ||
+    parseCorrect(q.correct_answer).length > 1;
+}
+
+function sameAnswers(a, b) {
+  if (a.length !== b.length) return false;
+  const left = a.map(String).sort();
+  const right = b.map(String).sort();
+  return left.every((v, i) => v === right[i]);
+}
+
 function setSignedOut() {
   currentUser = null;
   currentBank = null;
-
   setHidden("authSection", false);
   setHidden("appSection", true);
   setHidden("logoutButton", true);
   setHidden("questionSection", true);
   setHidden("practiceSection", true);
-
   $("userLabel").textContent = "";
 }
 
 function setSignedIn(user) {
   currentUser = user;
-
   setHidden("authSection", true);
   setHidden("appSection", false);
   setHidden("logoutButton", false);
-
   $("userLabel").textContent = user.email || "已登入";
 }
 
 async function refreshSession() {
-  const { data, error } = await db.auth.getSession();
+  const {data, error} = await db.auth.getSession();
   if (error) throw error;
-
   if (data.session) {
     setSignedIn(data.session.user);
     await loadBanks();
@@ -343,21 +284,14 @@ async function refreshSession() {
   }
 }
 
+/* 登入與註冊 */
 $("loginButton").onclick = async () => {
   const email = $("email").value.trim();
   const password = $("password").value;
-
-  if (!email || !password) {
-    return status("請輸入電子郵件及密碼。", true);
-  }
+  if (!email || !password) return status("請輸入電子郵件及密碼。", true);
 
   status("登入中……");
-
-  const { data, error } = await db.auth.signInWithPassword({
-    email,
-    password
-  });
-
+  const {data, error} = await db.auth.signInWithPassword({email, password});
   if (error) return status("登入失敗：" + error.message, true);
 
   setSignedIn(data.user);
@@ -368,22 +302,11 @@ $("loginButton").onclick = async () => {
 $("signupButton").onclick = async () => {
   const email = $("email").value.trim();
   const password = $("password").value;
-
-  if (!email || !password) {
-    return status("請輸入電子郵件及密碼。", true);
-  }
-
-  if (password.length < 6) {
-    return status("密碼至少需要 6 個字元。", true);
-  }
+  if (!email || !password) return status("請輸入電子郵件及密碼。", true);
+  if (password.length < 6) return status("密碼至少需要 6 個字元。", true);
 
   status("正在註冊……");
-
-  const { data, error } = await db.auth.signUp({
-    email,
-    password
-  });
-
+  const {data, error} = await db.auth.signUp({email, password});
   if (error) return status("註冊失敗：" + error.message, true);
 
   if (data.session) {
@@ -391,13 +314,12 @@ $("signupButton").onclick = async () => {
     await loadBanks();
     status("註冊成功！");
   } else {
-    status("註冊已送出，請依照電子郵件完成驗證後再登入。");
+    status("註冊已送出，請先依電子郵件完成驗證，再登入。");
   }
 };
 
 $("logoutButton").onclick = async () => {
-  const { error } = await db.auth.signOut();
-
+  const {error} = await db.auth.signOut();
   if (error) return status("登出失敗：" + error.message, true);
 
   setSignedOut();
@@ -408,19 +330,19 @@ $("logoutButton").onclick = async () => {
   status("已登出。");
 };
 
+db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 db.auth.onAuthStateChange((_event, session) => {
   if (!session) setSignedOut();
 });
 
+/* 題庫 */
 async function loadBanks() {
-  const { data, error } = await db.from("question_banks")
+  const {data, error} = await db.from("question_banks")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", {ascending:false});
 
-  if (error) {
-    return status("載入題庫失敗：" + error.message, true);
-  }
-
+  if (error) return status("載入題庫失敗：" + error.message, true);
   banks = data || [];
   renderBanks();
 }
@@ -437,7 +359,6 @@ function renderBanks() {
   banks.forEach(bank => {
     const item = document.createElement("div");
     item.className = "bank-item";
-
     item.innerHTML = `
       <div class="bank-head">
         <div>
@@ -447,29 +368,23 @@ function renderBanks() {
           <span class="pill">${bank.is_public ? "公開題庫" : "私人題庫"}</span>
         </div>
         <div class="actions">
-          <button class="open-bank">開啟</button>
-          ${isOwner(bank)
-            ? '<button class="secondary edit-bank">編輯</button><button class="danger delete-bank">刪除</button>'
-            : ""}
+          <button type="button" class="open-bank">開啟</button>
+          ${isOwner(bank) ? '<button type="button" class="secondary edit-bank">編輯</button><button type="button" class="danger delete-bank">刪除</button>' : ""}
         </div>
       </div>`;
 
     item.querySelector(".open-bank").onclick = () => openBank(bank.id);
-
-    item.querySelector(".edit-bank")?.addEventListener("click", event => {
-      event.stopPropagation();
+    item.querySelector(".edit-bank")?.addEventListener("click", e => {
+      e.stopPropagation();
       showBankForm(bank);
     });
-
-    item.querySelector(".delete-bank")?.addEventListener("click", async event => {
-      event.stopPropagation();
-      await deleteBank(bank);
+    item.querySelector(".delete-bank")?.addEventListener("click", e => {
+      e.stopPropagation();
+      deleteBank(bank);
     });
-
-    item.addEventListener("click", event => {
-      if (!event.target.closest("button")) openBank(bank.id);
+    item.addEventListener("click", e => {
+      if (!e.target.closest("button")) openBank(bank.id);
     });
-
     list.appendChild(item);
   });
 }
@@ -479,22 +394,17 @@ $("cancelBankButton").onclick = () => setHidden("bankForm", true);
 
 function showBankForm(bank = null) {
   editingBankId = bank?.id || null;
-
   $("bankFormTitle").textContent = bank ? "編輯題庫" : "建立題庫";
   $("bankTitle").value = bank?.title || "";
   $("bankSubject").value = bank?.subject || "";
   $("bankDescription").value = bank?.description || "";
   $("bankPublic").checked = !!bank?.is_public;
-
   setHidden("bankForm", false);
-  $("bankForm").scrollIntoView({ behavior: "smooth", block: "start" });
+  $("bankForm").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 $("saveBankButton").onclick = async () => {
-  if (!currentUser) {
-    return status("請先登入。", true);
-  }
-
+  if (!currentUser) return status("請先登入。", true);
   const title = $("bankTitle").value.trim();
   if (!title) return status("請輸入題庫名稱。", true);
 
@@ -506,85 +416,57 @@ $("saveBankButton").onclick = async () => {
   };
 
   let result;
-
   if (editingBankId) {
-    const bank = banks.find(b => b.id === editingBankId);
-
-    if (!isOwner(bank)) {
-      return status("你沒有編輯此題庫的權限。", true);
-    }
-
-    result = await db.from("question_banks")
-      .update(payload)
-      .eq("id", editingBankId)
-      .eq("user_id", currentUser.id);
+    const bank = banks.find(b => String(b.id) === String(editingBankId));
+    if (!isOwner(bank)) return status("你沒有編輯此題庫的權限。", true);
+    result = await db.from("question_banks").update(payload)
+      .eq("id", editingBankId).eq("user_id", currentUser.id);
   } else {
     result = await db.from("question_banks")
-      .insert({ ...payload, user_id: currentUser.id });
+      .insert({...payload, user_id:currentUser.id});
   }
 
-  if (result.error) {
-    return status("儲存題庫失敗：" + result.error.message, true);
-  }
+  if (result.error) return status("儲存題庫失敗：" + result.error.message, true);
 
   setHidden("bankForm", true);
   await loadBanks();
-
-  if (currentBank && editingBankId === currentBank.id) {
-    currentBank = banks.find(b => b.id === currentBank.id) || currentBank;
+  if (currentBank) {
+    currentBank = banks.find(b => String(b.id) === String(currentBank.id)) || currentBank;
     $("selectedBankTitle").textContent = currentBank.title;
-    $("selectedBankDescription").textContent =
-      currentBank.description || currentBank.subject || "";
+    $("selectedBankDescription").textContent = currentBank.description || currentBank.subject || "";
   }
-
   editingBankId = null;
   status("題庫已儲存。");
 };
 
 async function deleteBank(bank) {
-  if (!isOwner(bank)) return;
+  if (!isOwner(bank)) return status("你沒有刪除此題庫的權限。", true);
+  if (!confirm(`確定刪除題庫「${bank.title}」及其中所有題目嗎？`)) return;
 
-  if (!confirm(`確定刪除題庫「${bank.title}」及其中所有題目嗎？`)) {
-    return;
-  }
+  const {error: qError} = await db.from("questions").delete().eq("bank_id", bank.id);
+  if (qError) return status("刪除題目失敗：" + qError.message, true);
 
-  const { error: questionError } = await db.from("questions")
-    .delete()
-    .eq("bank_id", bank.id);
+  const {error} = await db.from("question_banks").delete()
+    .eq("id", bank.id).eq("user_id", currentUser.id);
+  if (error) return status("刪除題庫失敗：" + error.message, true);
 
-  if (questionError) {
-    return status("刪除題目失敗：" + questionError.message, true);
-  }
-
-  const { error } = await db.from("question_banks")
-    .delete()
-    .eq("id", bank.id)
-    .eq("user_id", currentUser.id);
-
-  if (error) {
-    return status("刪除題庫失敗：" + error.message, true);
-  }
-
-  if (currentBank?.id === bank.id) {
+  if (currentBank && String(currentBank.id) === String(bank.id)) {
     currentBank = null;
     questions = [];
     setHidden("questionSection", true);
     setHidden("practiceSection", true);
   }
-
   await loadBanks();
   status("題庫已刪除。");
 }
 
 async function openBank(id) {
-  const bank = banks.find(b => b.id === id);
-  if (!bank) return;
+  const bank = banks.find(b => String(b.id) === String(id));
+  if (!bank) return status("找不到這個題庫，請重新整理。", true);
 
   currentBank = bank;
-
   $("selectedBankTitle").textContent = bank.title;
-  $("selectedBankDescription").textContent =
-    bank.description || bank.subject || "";
+  $("selectedBankDescription").textContent = bank.description || bank.subject || "";
 
   setHidden("questionSection", false);
   setHidden("practiceSection", true);
@@ -593,25 +475,17 @@ async function openBank(id) {
   setHidden("questionForm", true);
 
   await refreshQuestions();
-
-  $("questionSection").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  $("questionSection").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 async function refreshQuestions() {
   if (!currentBank) return;
 
-  const { data, error } = await db.from("questions")
-    .select("*")
+  const {data, error} = await db.from("questions").select("*")
     .eq("bank_id", currentBank.id)
-    .order("created_at", { ascending: true });
+    .order("created_at", {ascending:true});
 
-  if (error) {
-    return status("載入題目失敗：" + error.message, true);
-  }
-
+  if (error) return status("載入題目失敗：" + error.message, true);
   questions = data || [];
   renderQuestions();
 }
@@ -629,47 +503,48 @@ function renderQuestions() {
     const opts = parseOptions(q.options);
     const item = document.createElement("div");
     item.className = "question-item";
-
     item.innerHTML = `
       <div class="question-head">
-        <div style="flex:1;min-width:200px">
-          <span class="pill">第 ${i + 1} 題</span>
+        <div style="flex:1;min-width:180px">
+          <span class="pill">第 ${i+1} 題</span>
           <p style="white-space:pre-wrap">${escapeHtml(q.content)}</p>
-          ${opts.length
-            ? `<p class="muted">共 ${opts.length} 個選項</p>`
-            : '<p class="muted">尚未設定選項</p>'}
+          <p class="muted">${opts.length ? `共 ${opts.length} 個選項` : "尚未設定選項"}</p>
         </div>
-        ${isOwner(currentBank)
-          ? '<div class="actions"><button class="secondary edit-question">編輯</button><button class="danger delete-question">刪除</button></div>'
-          : ""}
+        ${isOwner(currentBank) ? '<div class="actions"><button type="button" class="secondary edit-question">編輯</button><button type="button" class="danger delete-question">刪除</button></div>' : ""}
       </div>`;
 
-    item.querySelector(".edit-question")?.addEventListener("click", () => {
-      showQuestionForm(q);
-    });
-
-    item.querySelector(".delete-question")?.addEventListener("click", () => {
-      deleteQuestion(q);
-    });
-
+    item.querySelector(".edit-question")?.addEventListener("click", () => showQuestionForm(q));
+    item.querySelector(".delete-question")?.addEventListener("click", () => deleteQuestion(q));
     list.appendChild(item);
   });
 }
 
-/* 修正重點：按鈕事件只設定一次，且位於函式外部。 */
-$("newQuestionButton").onclick = () => {
-  if (!currentBank) {
-    status("請先開啟一個題庫。", true);
-    return;
-  }
+/*
+ * 新增題目的主要修正：
+ * 1. 只在此處綁定一次事件。
+ * 2. 先回報按鈕是否有收到點擊。
+ * 3. 將開啟表單時的錯誤顯示在頁面上。
+ */
+$("newQuestionButton").addEventListener("click", event => {
+  event.preventDefault();
 
-  if (!isOwner(currentBank)) {
-    status("你沒有編輯此題庫的權限。", true);
-    return;
-  }
+  try {
+    if (!currentBank) {
+      status("沒有選取題庫。請先返回題庫列表，再重新開啟題庫。", true);
+      return;
+    }
+    if (!isOwner(currentBank)) {
+      status("目前登入帳號不是此題庫的擁有者，無法新增題目。", true);
+      return;
+    }
 
-  showQuestionForm();
-};
+    status("已收到新增題目指令，正在開啟表單……");
+    showQuestionForm();
+  } catch (error) {
+    console.error("開啟新增題目表單失敗：", error);
+    status("開啟表單失敗：" + (error?.message || String(error)), true);
+  }
+});
 
 $("cancelQuestionButton").onclick = () => {
   setHidden("questionForm", true);
@@ -677,15 +552,8 @@ $("cancelQuestionButton").onclick = () => {
 };
 
 function showQuestionForm(q = null) {
-  if (!currentBank) {
-    status("請先開啟一個題庫。", true);
-    return;
-  }
-
-  if (!isOwner(currentBank)) {
-    status("你沒有編輯此題庫的權限。", true);
-    return;
-  }
+  if (!currentBank) throw new Error("目前沒有選取題庫。");
+  if (!isOwner(currentBank)) throw new Error("你沒有編輯此題庫的權限。");
 
   editingQuestionId = q?.id || null;
   editingImagePath = q?.image_url || "";
@@ -696,28 +564,17 @@ function showQuestionForm(q = null) {
   $("questionType").value = isMultiple(q) ? "multiple" : "single";
 
   optionValues = q ? parseOptions(q.options) : ["", "", "", ""];
-
-  while (optionValues.length < 2) {
-    optionValues.push("");
-  }
-
-  renderOptionEditor(q ? normalizeCorrect(q) : []);
+  while (optionValues.length < 2) optionValues.push("");
 
   $("questionImage").value = "";
   $("imagePreviewArea").innerHTML = "";
+  renderOptionEditor(q ? normalizeCorrect(q) : []);
 
-  if (q?.image_url) {
-    showImagePreview(q.image_url);
-  }
+  if (q?.image_url) showImagePreview(q.image_url);
 
   setHidden("questionForm", false);
-
-  $("questionForm").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-
-  status("");
+  $("questionForm").scrollIntoView({behavior:"smooth", block:"start"});
+  status("新增題目表單已開啟。");
 }
 
 function renderOptionEditor(correctValues = []) {
@@ -731,31 +588,23 @@ function renderOptionEditor(correctValues = []) {
     const input = document.createElement("input");
     input.value = value;
     input.placeholder = `選項 ${String.fromCharCode(65 + index)}`;
-    input.setAttribute("aria-label", `選項 ${index + 1}`);
+    input.setAttribute("aria-label", `選項 ${index+1}`);
 
     input.oninput = () => {
-      const previousValue = optionValues[index];
+      const oldValue = optionValues[index];
       optionValues[index] = input.value;
-
-      const updatedCorrect = correctValues.map(v =>
-        v === previousValue ? input.value : v
-      );
-
-      renderCorrectEditor(updatedCorrect);
+      const updated = correctValues.map(v => v === oldValue ? input.value : v);
+      renderCorrectEditor(updated);
     };
 
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "danger";
     remove.textContent = "刪除";
-
     remove.onclick = () => {
-      const removedValue = optionValues[index];
+      const removed = optionValues[index];
       optionValues.splice(index, 1);
-
-      renderOptionEditor(
-        correctValues.filter(v => v !== removedValue)
-      );
+      renderOptionEditor(correctValues.filter(v => v !== removed));
     };
 
     row.append(input, remove);
@@ -766,33 +615,25 @@ function renderOptionEditor(correctValues = []) {
 }
 
 $("addOptionButton").onclick = () => {
-  if (optionValues.length >= 20) {
-    return status("最多可設定 20 個選項。", true);
-  }
-
+  if (optionValues.length >= 20) return status("最多可設定 20 個選項。", true);
+  const selected = [...$("correctEditor").querySelectorAll("input:checked")].map(el => el.value);
   optionValues.push("");
-  renderOptionEditor();
+  renderOptionEditor(selected);
 };
 
 $("questionType").onchange = () => {
-  const selected = [
-    ...$("correctEditor").querySelectorAll("input:checked")
-  ].map(input => input.value);
-
+  const selected = [...$("correctEditor").querySelectorAll("input:checked")].map(el => el.value);
   renderCorrectEditor(selected);
 };
 
 function renderCorrectEditor(selected = []) {
   const editor = $("correctEditor");
-  if (!editor) return;
-
-  const multi = $("questionType").value === "multiple";
-
-  const currentSelected = selected.length
+  const chosen = selected.length
     ? selected
-    : [...editor.querySelectorAll("input:checked")].map(input => input.value);
+    : [...editor.querySelectorAll("input:checked")].map(el => el.value);
 
   editor.innerHTML = "";
+  const multi = $("questionType").value === "multiple";
 
   optionValues.forEach((value, index) => {
     if (!value.trim()) return;
@@ -804,42 +645,32 @@ function renderCorrectEditor(selected = []) {
     input.type = multi ? "checkbox" : "radio";
     input.name = "correctOption";
     input.value = value;
-    input.checked = currentSelected.includes(value);
+    input.checked = chosen.includes(value);
 
     const text = document.createElement("span");
-    text.textContent = `${String.fromCharCode(65 + index)}. ${value}`;
+    text.textContent = `${String.fromCharCode(65+index)}. ${value}`;
 
     label.append(input, text);
     editor.appendChild(label);
   });
 }
 
+/* 圖片上傳 */
 async function uploadQuestionImage() {
   const file = $("questionImage").files[0];
+  if (!file) return editingImagePath || "";
 
-  if (!file) {
-    return editingImagePath || "";
-  }
-
-  if (!file.type.startsWith("image/")) {
-    throw new Error("請選擇圖片檔案。");
-  }
-
-  if (file.size > 8 * 1024 * 1024) {
-    throw new Error("圖片不可超過 8 MB。");
-  }
+  if (!file.type.startsWith("image/")) throw new Error("請選擇圖片檔案。");
+  if (file.size > 8 * 1024 * 1024) throw new Error("圖片不可超過 8 MB。");
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const path = `${currentUser.id}/${Date.now()}_${safeName}`;
 
-  const { error } = await db.storage.from(IMAGE_BUCKET)
-    .upload(path, file, {
-      upsert: true,
-      contentType: file.type
-    });
-
+  const {error} = await db.storage.from(IMAGE_BUCKET).upload(path, file, {
+    upsert:true,
+    contentType:file.type
+  });
   if (error) throw error;
-
   return path;
 }
 
@@ -847,27 +678,26 @@ async function getImageUrl(path) {
   if (!path) return "";
   if (/^https?:\/\//i.test(path)) return path;
 
-  const { data, error } = await db.storage.from(IMAGE_BUCKET)
-    .createSignedUrl(path, 3600);
-
+  const {data, error} = await db.storage.from(IMAGE_BUCKET).createSignedUrl(path, 3600);
   if (error) return "";
-
   return data?.signedUrl || "";
 }
 
 async function showImagePreview(path) {
   const url = await getImageUrl(path);
-
   if (!url) {
-    $("imagePreviewArea").innerHTML =
-      '<p class="muted">圖片預覽無法載入，儲存路徑仍會保留。</p>';
+    $("imagePreviewArea").textContent = "圖片預覽無法載入，請檢查 Storage 權限。";
     return;
   }
 
-  $("imagePreviewArea").innerHTML =
-    `<img class="question-image" src="${escapeHtml(url)}" alt="題目圖片預覽">`;
+  const img = document.createElement("img");
+  img.className = "question-image";
+  img.src = url;
+  img.alt = "題目圖片預覽";
+  $("imagePreviewArea").replaceChildren(img);
 }
 
+/* 儲存題目 */
 $("saveQuestionButton").onclick = async () => {
   if (!currentUser || !currentBank || !isOwner(currentBank)) {
     return status("你沒有編輯此題庫的權限。", true);
@@ -875,22 +705,11 @@ $("saveQuestionButton").onclick = async () => {
 
   const content = $("questionContent").value.trim();
   const options = optionValues.map(v => v.trim()).filter(Boolean);
-  const correct = [
-    ...$("correctEditor").querySelectorAll("input:checked")
-  ].map(input => input.value);
+  const correct = [...$("correctEditor").querySelectorAll("input:checked")].map(el => el.value);
 
-  if (!content) {
-    return status("請輸入題目內容。", true);
-  }
-
-  if (options.length < 2) {
-    return status("請至少填寫兩個選項。", true);
-  }
-
-  if (!correct.length) {
-    return status("請選擇正確答案。", true);
-  }
-
+  if (!content) return status("請輸入題目內容。", true);
+  if (options.length < 2) return status("請至少填寫兩個選項。", true);
+  if (!correct.length) return status("請選擇正確答案。", true);
   if ($("questionType").value === "single" && correct.length !== 1) {
     return status("單選題只能選一個正確答案。", true);
   }
@@ -900,27 +719,21 @@ $("saveQuestionButton").onclick = async () => {
 
   try {
     status("正在儲存題目……");
-
     const image_url = await uploadQuestionImage();
 
     const payload = {
-      bank_id: currentBank.id,
+      bank_id:currentBank.id,
       content,
-      image_url: image_url || null,
+      image_url:image_url || null,
       options,
-      correct_answer: correct.length === 1
-        ? correct[0]
-        : JSON.stringify(correct),
-      explanation: $("questionExplanation").value.trim()
+      correct_answer:correct.length === 1 ? correct[0] : JSON.stringify(correct),
+      explanation:$("questionExplanation").value.trim()
     };
 
     let result;
-
     if (editingQuestionId) {
-      result = await db.from("questions")
-        .update(payload)
-        .eq("id", editingQuestionId)
-        .eq("bank_id", currentBank.id);
+      result = await db.from("questions").update(payload)
+        .eq("id", editingQuestionId).eq("bank_id", currentBank.id);
     } else {
       result = await db.from("questions").insert(payload);
     }
@@ -930,85 +743,57 @@ $("saveQuestionButton").onclick = async () => {
     setHidden("questionForm", true);
     editingQuestionId = null;
     editingImagePath = "";
-
     await refreshQuestions();
     status("題目已儲存！");
   } catch (error) {
-    status("儲存失敗：" + (error.message || "未知錯誤"), true);
+    console.error("儲存題目失敗：", error);
+    status("儲存失敗：" + (error?.message || String(error)), true);
   } finally {
     button.disabled = false;
   }
 };
 
 async function deleteQuestion(q) {
-  if (!isOwner(currentBank)) {
-    return status("你沒有刪除此題目的權限。", true);
-  }
-
+  if (!isOwner(currentBank)) return status("你沒有刪除此題目的權限。", true);
   if (!confirm("確定刪除這道題目嗎？")) return;
 
-  const { error } = await db.from("questions")
-    .delete()
-    .eq("id", q.id)
-    .eq("bank_id", currentBank.id);
-
-  if (error) {
-    return status("刪除失敗：" + error.message, true);
-  }
+  const {error} = await db.from("questions").delete()
+    .eq("id", q.id).eq("bank_id", currentBank.id);
+  if (error) return status("刪除失敗：" + error.message, true);
 
   await refreshQuestions();
   status("題目已刪除。");
 }
 
+/* 作答模式 */
 $("practiceButton").onclick = startPractice;
-
 $("exitPracticeButton").onclick = () => {
   setHidden("practiceSection", true);
   setHidden("questionSection", false);
-
-  $("questionSection").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  $("questionSection").scrollIntoView({behavior:"smooth", block:"start"});
 };
 
 async function startPractice() {
-  if (!currentBank) return;
+  if (!currentBank) return status("請先開啟題庫。", true);
+  if (!questions.length) return status("這個題庫還沒有題目。", true);
 
-  if (!questions.length) {
-    return status("這個題庫還沒有題目。", true);
-  }
-
-  practiceQuestions = questions.filter(q =>
-    parseOptions(q.options).length >= 2
-  );
-
+  practiceQuestions = questions.filter(q => parseOptions(q.options).length >= 2);
   if (!practiceQuestions.length) {
-    return status(
-      "目前題目還沒有完整選項。請先編輯題目並設定至少兩個選項。",
-      true
-    );
+    return status("題目還沒有完整選項，請先編輯題目。", true);
   }
 
   answers = {};
   submitted = false;
-
   setHidden("questionSection", true);
   setHidden("practiceSection", false);
   setHidden("submitPracticeButton", false);
   setHidden("retryPracticeButton", true);
-
   $("practiceTitle").textContent = currentBank.title + "｜作答";
-  $("practiceDescription").textContent =
-    "作答前不會顯示正確答案或解析。";
+  $("practiceDescription").textContent = "交卷前不會顯示正確答案或解析。";
   $("practiceResult").innerHTML = "";
 
   await renderPracticeQuestions();
-
-  $("practiceSection").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  $("practiceSection").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 async function renderPracticeQuestions() {
@@ -1022,9 +807,8 @@ async function renderPracticeQuestions() {
 
     const card = document.createElement("div");
     card.className = "question-item";
-
     card.innerHTML = `
-      <span class="pill">第 ${i + 1} 題</span>
+      <span class="pill">第 ${i+1} 題</span>
       <span class="pill">${multi ? "多選題" : "單選題"}</span>
       <h3 style="white-space:pre-wrap;margin-top:10px">${escapeHtml(q.content)}</h3>
       <div class="practice-image"></div>
@@ -1032,17 +816,14 @@ async function renderPracticeQuestions() {
       <div class="practice-options"></div>
       <div class="practice-feedback"></div>`;
 
-    const imageBox = card.querySelector(".practice-image");
-
     if (q.image_url) {
       const url = await getImageUrl(q.image_url);
-
       if (url) {
         const img = document.createElement("img");
         img.className = "question-image";
         img.src = url;
         img.alt = "題目圖片";
-        imageBox.appendChild(img);
+        card.querySelector(".practice-image").appendChild(img);
       }
     }
 
@@ -1061,66 +842,44 @@ async function renderPracticeQuestions() {
         if (submitted) return;
 
         if (multi) {
-          const current = answers[i] || [];
-
+          const old = answers[i] || [];
           answers[i] = input.checked
-            ? [...new Set([...current, opt])]
-            : current.filter(v => v !== opt);
+            ? [...new Set([...old, opt])]
+            : old.filter(v => v !== opt);
         } else {
           answers[i] = [opt];
         }
 
-        [...optionBox.querySelectorAll(".answer-choice")]
-          .forEach(el => el.classList.remove("selected"));
-
-        [...optionBox.querySelectorAll("input:checked")]
-          .forEach(el => {
-            el.closest(".answer-choice").classList.add("selected");
-          });
-
+        [...optionBox.querySelectorAll(".answer-choice")].forEach(el => el.classList.remove("selected"));
+        [...optionBox.querySelectorAll("input:checked")].forEach(el => el.closest(".answer-choice").classList.add("selected"));
         updateProgress();
       };
 
       const text = document.createElement("span");
-      text.textContent = `${String.fromCharCode(65 + j)}. ${opt}`;
-
+      text.textContent = `${String.fromCharCode(65+j)}. ${opt}`;
       label.append(input, text);
       optionBox.appendChild(label);
     });
 
     root.appendChild(card);
   }
-
   updateProgress();
 }
 
 function updateProgress() {
   const total = practiceQuestions.length;
-  const count = practiceQuestions.filter((_, i) =>
-    (answers[i] || []).length > 0
-  ).length;
-
+  const count = practiceQuestions.filter((_, i) => (answers[i] || []).length > 0).length;
   $("progressText").textContent = `已作答 ${count} / ${total} 題`;
-  $("progressBar").style.width =
-    `${total ? count / total * 100 : 0}%`;
+  $("progressBar").style.width = `${total ? count / total * 100 : 0}%`;
 }
 
 $("submitPracticeButton").onclick = () => {
   if (submitted) return;
 
-  const unanswered = practiceQuestions.filter((_, i) =>
-    (answers[i] || []).length === 0
-  ).length;
-
-  if (
-    unanswered &&
-    !confirm(`還有 ${unanswered} 題未作答，確定交卷嗎？`)
-  ) {
-    return;
-  }
+  const unanswered = practiceQuestions.filter((_, i) => !(answers[i] || []).length).length;
+  if (unanswered && !confirm(`還有 ${unanswered} 題未作答，確定交卷嗎？`)) return;
 
   submitted = true;
-
   let score = 0;
   const cards = [...$("practiceQuestions").children];
 
@@ -1128,44 +887,28 @@ $("submitPracticeButton").onclick = () => {
     const selected = answers[i] || [];
     const correct = normalizeCorrect(q);
     const isCorrect = sameAnswers(selected, correct);
-
     if (isCorrect) score++;
 
     const feedback = cards[i].querySelector(".practice-feedback");
-    feedback.className =
-      "feedback " + (isCorrect ? "correct" : "incorrect");
+    feedback.className = "feedback " + (isCorrect ? "correct" : "incorrect");
 
     const opts = parseOptions(q.options);
-
     const answerText = correct.map(value => {
       const index = opts.indexOf(value);
-
-      return index >= 0
-        ? `${String.fromCharCode(65 + index)}. ${value}`
-        : value;
+      return index >= 0 ? `${String.fromCharCode(65+index)}. ${value}` : value;
     }).join("、");
 
     feedback.innerHTML = `
       <strong>${isCorrect ? "✓ 答對了" : "✗ 答錯了"}</strong><br>
       正確答案：${escapeHtml(answerText || "尚未設定")}<br>
-      ${selected.length
-        ? `你的答案：${escapeHtml(selected.join("、"))}<br>`
-        : "你的答案：未作答<br>"}
-      <hr>
-      <strong>解析</strong><br>
-      ${escapeHtml(q.explanation || "這題尚未提供解析。")}`;
+      你的答案：${escapeHtml(selected.join("、") || "未作答")}<hr>
+      <strong>解析</strong><br>${escapeHtml(q.explanation || "這題尚未提供解析。")}`;
 
-    cards[i].querySelectorAll("input").forEach(input => {
-      input.disabled = true;
-    });
-
-    cards[i].querySelectorAll(".answer-choice").forEach(label => {
-      label.classList.remove("selected");
-    });
+    cards[i].querySelectorAll("input").forEach(input => input.disabled = true);
+    cards[i].querySelectorAll(".answer-choice").forEach(label => label.classList.remove("selected"));
   });
 
   const total = practiceQuestions.length;
-
   $("practiceResult").innerHTML = `
     <div class="card" style="margin-top:18px">
       <h2>作答結果</h2>
@@ -1175,21 +918,22 @@ $("submitPracticeButton").onclick = () => {
 
   setHidden("submitPracticeButton", true);
   setHidden("retryPracticeButton", false);
-
   $("progressText").textContent = `已完成 ${total} / ${total} 題`;
   $("progressBar").style.width = "100%";
-
-  $("practiceResult").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  $("practiceResult").scrollIntoView({behavior:"smooth", block:"start"});
 };
 
 $("retryPracticeButton").onclick = startPractice;
 
-refreshSession().catch(error => {
-  status("初始化失敗：" + error.message, true);
-});
+/* 啟動網站 */
+if (!window.supabase) {
+  status("Supabase 程式庫載入失敗。請檢查網路連線後重新整理。", true);
+} else {
+  refreshSession().catch(error => {
+    console.error("初始化失敗：", error);
+    status("初始化失敗：" + (error?.message || String(error)), true);
+  });
+}
 </script>
 </body>
-</html>
+  </html>
